@@ -150,7 +150,6 @@ const create = (req, res) => {
 
 > Any function that modifies data in the database really should be protected with validations and comprehensive error handling. We don't have the time to add it now but here in the controller is one place where we can make sure the user is saving the data we need.
 
-#### You do:
 10. Spend 15 minutes completing the `update` and `destroy` methods (using similar techniques that we used with the `index`, `show`, and `create` routes). Test all of the routes with your favourite HTTP Request tool (like Postman or `curl`). 
 
 ### Front-End Setup
@@ -168,18 +167,75 @@ npm start
 
 3. Navigate to `localhost:3000` to ensure the app is up and running. Take 5 minutes to familiarize yourself with the starter code.
 
-4. 
+4. We want our users to see a list of games served from the database (keep it running in another window or tab of your terminal app). Let's start by adding a Route in `config/routes.js`.
 
-## Application Dive (10 min / 0:45)
+```js
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
 
-With a partner, take 5 minutes look through our back-end and 5 minutes to look through the front-end projects. Try
-to answer the following questions.
+import Home from '../pages/Home'
+import GameList from '../pages/GameList'
 
-* What npm packages are we using?
-* What are the properties for our model?
-* What are the routes? What components do they render? What's the nested structure look like?
-* What CRUD functionality is currently available to us on the back-end?
-* Where is the front-end making calls to our back-end?
+export default (
+  <Switch>
+    <Route exact path='/' component={ Home } />
+    <Route path='/games' component={ GameList } />
+  </Switch>
+)
+```
+
+> We import `GameList` even though it doesn't exist and you may see an error  we'll fix that right now.
+
+5. Create `/src/pages/GameList.js` and get a boilerplate class-based component in place.
+
+6. The `GameList` component is going to be our first to make a request to the backend through our helper functions. Build out the component with the following code:
+
+```js
+import React, { Component } from 'react'
+import GameModel from '../models/game'
+
+import { Link } from 'react-router-dom'
+import GameCard from '../components/GameCard'
+
+class GameList extends Component {
+  state = {
+    games: []
+  }
+
+  componentDidMount() {
+    this.fetchData()
+  }
+
+  fetchData = () => {
+    GameModel.all().then(data => {
+      this.setState({ games: data.games })
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>All Games</h1>
+      </div>
+    );
+  }
+}
+
+export default GameList;
+```
+
+7. In `/models/game.js` add the method we invoke in the `GameList` component.
+
+```js
+  static all = () => {
+    // the fetch API will not parse JSON in the response automatically so we handle it in the first .then()
+    return fetch(`${url}/games`).then(res => res.json())
+  }
+```
+
+> What is the `static` keyword here for?
+
+8. We won't see a list of games in state quite yet. What we will see is a CrossCORS error in the browser's console. Let's take a break to discuss that.
 
 ## Two-Server Architecture (30 min / 1:15)
 
@@ -188,11 +244,11 @@ Currently we are using this type of architecture. Our back-end is running on
 say this is that these applications have different "origins". One issue with
 this is that our browser is not going to like requests from our front-end
 (served by `localhost:3000`) to our back-end on `localhost:3001`. In the
-application, navigate to the Saved Translations view and check the console. You
+application, navigate to the Game List view and check the console. You
 should see:
 
 ```
-XMLHttpRequest cannot load http://localhost:3001/api/translations. No 'Access-
+XMLHttpRequest cannot load http://localhost:3001/api/v1/games. No 'Access-
 Control-Allow-Origin' header is present on the requested resource. Origin
 'http://localhost:3000' is therefore not allowed access.
 ```
@@ -226,14 +282,179 @@ app.use(cors())
 npm start
 ```
 
-Now when you navigate to `localhost:3000/translations`, you should see a list of
-the translations being retrieved from our API.
+Now when you navigate to `localhost:3000/games`, you should see an array of games 
+being retrieved from our API and stored in `GameList`'s state.
 
 > Note: The default `cors` configuration (above) will allow requests from
 > **any** origin (which may or may not be ideal). To more precisely control
 > access to our API, we would need to do little more configuration. Check out
 > the [cors documentation](https://www.npmjs.com/package/cors) for more
 > information on this process.
+
+### Complete the GameList Component
+
+1. Let's display each game on the GameList page. Refactor your `render` function to the following:
+
+```js
+  render() {
+    let gameList = this.state.games.map((game, index) => {
+      return <h1 key={index}>{ game.title }</h1>
+    })
+
+    return (
+      <div>
+        <h1>All Games</h1>
+        { this.state.games ? gameList : 'Loading...' }
+      </div>
+    );
+  }
+```
+
+> We're **conditionally rendering** the game titles once we know the data from our API is safely in state. This will show a "Loading..." message until the array of games in state has some value and is no longer empty. Once that is true, we render the titles for each game.
+
+### Single Game Page
+
+1. A list of game titles is fine but our users will want to do more than see some text. Let's refactor those `<h1>` elements to render individual `GameCard` components. The GameCard component should display the title, publisher, and the coverArtUrl but how it is laid out is up to you. 
+
+2. With a working GameCard component rendering to the GameList page, we can now start to build a single detail page for each game. Let's make each GameCard component a clickable link. In the render function of `GameList.js`:
+
+```js
+let gameList = this.state.games.map((game, index) => {
+  return (
+    <Link to={`/games/${ game._id }`} key={index}>
+      <GameCard  {...game} />
+    </Link>
+  )
+})
+```
+
+For every `<Link>` component, we need to add a `<Route />`. React Router can handle dynamic URLs and does so in a way we are already familiar with by allowing path names to look like `/games/:id` in the Route component. Add this to `routes.js`:
+
+```js
+import GameShow from '../pages/GameShow'
+...
+<Route path='/games/:id' component={ GameShow } />
+```
+
+3. The GameShow component will be up to you to build out. Here are the requirements:
+
+```
+- it must use a static method from the GameModel 
+- it must fetch a single game from the database using the ID
+- it must conditionally render a GameCard component and pass it all required props
+```
+
+> Hint: Look for the game's ID in the props passed to each component rendered through a <Route />. You can find the id in the `match` props.
+
+4. Our last step together will be to build out the functionality for a user to create a new game. We'll type this out together, but here is the final code for this component. In a new file, `/pages/NewGame.js`, add:
+
+```js
+import React, { Component } from 'react';
+import GameModel from '../models/game'
+
+class NewGame extends Component {
+  state = {
+    title: '',
+    publisher: '',
+    coverArtUrl: '',
+    completed: false  
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    GameModel.create(this.state)
+      .then(data => {
+        this.props.history.push('/games')
+      })
+  }
+
+  handleChange = (event) => {
+    if (event.target.type !== "text") {
+      this.setState({ completed: !this.state.completed })
+    }
+
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <h2>New Game</h2>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-input">
+            <label htmlFor="title">Title</label>
+            <input 
+              type="text" 
+              name="title" 
+              onChange={this.handleChange}
+              value={this.state.title} />
+          </div>
+          <div className="form-input">
+            <label htmlFor="publisher">Publisher</label>
+            <input 
+              type="text" 
+              name="publisher" 
+              onChange={this.handleChange}
+              value={this.state.publisher} />
+          </div>
+          <div className="form-input">
+            <label htmlFor="coverArtUrl">Image URL</label>
+            <input 
+              type="text" 
+              name="coverArtUrl" 
+              onChange={this.handleChange}
+              value={this.state.coverArtUrl} />
+          </div>
+          <div className="form-input">
+            <label htmlFor="completed">Completed</label>
+            <input 
+              type="checkbox" 
+              id="completed" 
+              checked={this.state.completed} 
+              onChange={this.handleChange} />
+          </div>
+
+          <input type="submit" value="Save!"/>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default NewGame;
+```
+
+As we've seen before, here our component renders a form for our user to interact with. This form has **controlled inputs**, in other words, input elements where the value is tied directly to state and only modified through changing state. A separate `onSubmit()` method is called when the form's submit button is pressed. We stop the default submit behaviour from happening and instead make the request through our model file. Let's write the fetch statement that will send our form data to the API as JSON.
+
+And in `/models/game.js` add:
+
+```js
+class GameModel {
+  ...
+  static create = (gameData) => {
+    return fetch(`${url}/games`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(gameData)
+    })
+      .then(res => res.json())
+  }
+}
+```
+
+### Complete Functionality
+
+Time permitting, work through the following features until your GameLib app allows a user full CRUD functionality.
+- on the GameList page, a user should be able to press a button to delete a game from the DB and be immediately shown an updated list of games.
+- on the GameCard component, a user should be able to toggle an edit form, provide new values for the game, and save their changes.
+- find an image of a badge online and display it on the GameList page for each game the user has completed
+
+## Bonus
 
 ### Deploying to Separate Domains
 
@@ -245,18 +466,8 @@ how we would deploy them.
 As our back-end will need to be hosted on a server and host a database, we will
 want to deploy it to a hosting service like Heroku.
 
-We would go about this [no differently than we have
-previously](https://git.generalassemb.ly/dc-wdi-node-express/heroku-mlab-deployment).
-
-Check out a branch that has this set up:
-
-```bash
-git checkout microservice-solution
-```
-
-If you open the code, you'll see it has the `index.js` file set up with the port
-environment variable and the `connection.js` file set up to connect with
-a database.
+We would go about this no differently than we have
+previously.
 
 Make sure you're logged into the heroku cli:
 
@@ -267,7 +478,7 @@ heroku login
 Then create a new heroku application:
 
 ```bash
-heroku create react-translator-api
+heroku create react-gamelib-api
 ```
 
 > Note: `heroku create` creates the application and sets up the remote
@@ -376,18 +587,5 @@ surge ./build
 
 This is the setup that we implemented together in class.
 
-* Back-End: https://git.generalassemb.ly/cd-wdi-react-redux/react-translator-api/tree/microservice-solution
-* Front-End: https://github.com/cd-wdi-react-redux/react-translator/tree/mern-starter
-
-### Single-Server Solution
-
-If you'd like to see an example of a single-server implementation, you can check
-one out here:
-
-* Back-End: https://git.generalassemb.ly/cd-wdi-react-redux/react-translator-api/tree/single-server-solution
-
-## [License](LICENSE)
-
-1. All content is licensed under a CC­BY­NC­SA 4.0 license.
-1. All software code is licensed under GNU GPLv3. For commercial use or
-    alternative licensing, please contact legal@ga.co.
+* Back-End: link will be added at end of class
+* Front-End: link will be added at end of class
