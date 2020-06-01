@@ -132,18 +132,32 @@ const index = (req, res) => {
 
 7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:3001/api/v1/games/<ValidGameIdHere>`. 
 
-8. To implement the `create` method we will first need to modify our `server.js` file so that it will parse any JSON included with a POST or PUT request and save it within `req.body` for our access in the associated controller function.
+8. To implement the `create` method we first need to modify `server.js` to parse any JSON included with a POST or PUT request and save it within `req.body` for our access in the associated controller function. Uncomment line 9 of `server.js` to enable express's built-in body parsing capabilities. 
 
-Uncomment line 9 of `server.js` to enable express's built-in body parsing capabilities.
+9. Modify the `create` function in `controllers/games.js` to the following:
 
+```js
+const create = (req, res) => {
+    db.Game.create(req.body, (err, savedGame) => {
+        if (err) console.log('Error in games#create:', err)
 
+        // Validations and error handling here
+
+        res.status(200).json({ game: savedGame })
+    })
+}
+```
+
+> Any function that modifies data in the database really should be protected with validations and comprehensive error handling. We don't have the time to add it now but here in the controller is one place where we can make sure the user is saving the data we need.
+
+#### You do:
+10. Spend 15 minutes completing the `update` and `destroy` methods (using similar techniques that we used with the `index`, `show`, and `create` routes). Test all of the routes with your favourite HTTP Request tool (like Postman or `curl`). 
 
 ### Front-End Setup
 
-1. In a ***separate terminal window***, clone down [the React Translator
-   app](https://git.generalassemb.ly/dc-wdi-react-redux/react-translator)
-2. checkout to the `mern-starter` branch, install dependencies, and open in VS
-   Code.
+1. In a ***separate terminal window/tab***, clone down [the React GameLib
+   app](https://git.generalassemb.ly/SF-SEI/gamelib-client)
+2. Install dependencies, and open in VS Code.
 3. Start the development server:
 
 ```bash
@@ -152,7 +166,9 @@ npm start
 
 > If you inspect `package.json`, you will see that this is an alias for `react-scripts start`
 
-3. Navigate to `localhost:3000` to explore the application
+3. Navigate to `localhost:3000` to ensure the app is up and running. Take 5 minutes to familiarize yourself with the starter code.
+
+4. 
 
 ## Application Dive (10 min / 0:45)
 
