@@ -85,20 +85,19 @@ servers. This is more common and more straightforward.
 
 ## Getting Started (20 min / 0:35)
 
-Today, we will be using the React Translator app that used the IBM Watson API to
-translate text and provide audio pronunciations. We will also be using a
-Mongoose / Express back-end to allow for users to save translations.
+Today, we will be building the GameLib.biz app. GameLib.biz is a place for users to track their video game library and which games they've completed. 
+We will also be using a Mongoose / Express back-end to allow for users to save their games.
 
 ### Back-End Setup
 
 1. First, clone down [the
-   back-end](https://git.generalassemb.ly/dc-wdi-react-redux/react-translator-api),
+   back-end](https://git.generalassemb.ly/SF-SEI/gamelib-api),
    install dependencies, and open in VS Code.
 
-2. Run the seeds file to populate our MongoDB database with translation data.
+2. Run the seeds file to populate our MongoDB database with game data.
 
 ```bash
-node db/seeds.js
+node seed.js
 ```
 
 3. Start the server
@@ -107,9 +106,25 @@ node db/seeds.js
 npm start
 ```
 
-> If you inspect `package.json`, you will see that this is an alias for `node index.js` in the "scripts" object
+> If you inspect `package.json`, you will see that this is an alias for `nodemon server.js` in the "scripts" object
 
-4. Navigate to `localhost:3001/api/translations` to see the json our back-end is serving
+4. Navigate to `localhost:3001/api/v1/games` to see the response from our server. You should see a message that says: "Incomplete games#index controller function". 
+
+5. In `controllers/games.js` all CRUD functionality has been stubbed out but is currently incomplete. Complete the `index` function with the following:
+
+```js
+const index = (req, res) => {
+    db.Game.find({}, (err, foundGames) => {
+        if (err) console.log('Error in games#index:', err)
+        
++        if(!foundGames) return res.json({
++            message: 'No Games found in database.'
++        })
++
++        res.status(200).json({ games: foundGames });
+    })
+}
+```
 
 ### Front-End Setup
 
