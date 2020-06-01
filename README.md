@@ -112,19 +112,31 @@ npm start
 
 5. In `controllers/games.js` all CRUD functionality has been stubbed out but is currently incomplete. Complete the `index` function with the following:
 
-```
+```js
 const index = (req, res) => {
     db.Game.find({}, (err, foundGames) => {
         if (err) console.log('Error in games#index:', err)
         
-+        if(!foundGames) return res.json({
-+            message: 'No Games found in database.'
-+        })
-+
-+        res.status(200).json({ games: foundGames });
+        if(!foundGames) return res.json({
+            message: 'No Games found in database.'
+        })
+
+        res.status(200).json({ games: foundGames });
     })
 }
 ```
+
+> The code we added will return a JSON response to the client that we can use to save or display the data as necessary.
+
+6. Navigate to `localhost:3001/api/v1/games` to see the response from our server now. You should see an array of 10 game objects from our database in JSON format. If you don't, debug before moving on.
+
+7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:3001/api/v1/games/<ValidGameIdHere>`. 
+
+8. To implement the `create` method we will first need to modify our `server.js` file so that it will parse any JSON included with a POST or PUT request and save it within `req.body` for our access in the associated controller function.
+
+Uncomment line 9 of `server.js` to enable express's built-in body parsing capabilities.
+
+
 
 ### Front-End Setup
 
