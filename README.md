@@ -240,15 +240,15 @@ export default GameList;
 ## Two-Server Architecture (30 min / 1:15)
 
 Currently we are using this type of architecture. Our back-end is running on
-`localhost:3001` while our front-end is running on `localhost:3000`. One way to
+`localhost:4000` while our front-end is running on `localhost:3000`. One way to
 say this is that these applications have different "origins". One issue with
 this is that our browser is not going to like requests from our front-end
-(served by `localhost:3000`) to our back-end on `localhost:3001`. In the
+(served by `localhost:3000`) to our back-end on `localhost:4000`. In the
 application, navigate to the Game List view and check the console. You
 should see:
 
 ```
-XMLHttpRequest cannot load http://localhost:3001/api/v1/games. No 'Access-
+XMLHttpRequest cannot load http://localhost:4000/api/v1/games. No 'Access-
 Control-Allow-Origin' header is present on the requested resource. Origin
 'http://localhost:3000' is therefore not allowed access.
 ```
