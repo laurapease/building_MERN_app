@@ -515,7 +515,7 @@ heroku run node db/seeds.js
 Now that our back-end is deployed to Heroku, we need to update our front-end with the correct URLs in our axios requests. Right now, axios is requesting data from our local server:
 
 ```js
-axios.get('http://localhost:3001/api/translations')
+axios.get('http://localhost:4000/api/translations')
 ```
 
 Update your axios request with your Heroku URL and `'/api/transtations'` For example:
