@@ -103,7 +103,7 @@ node seed.js
 3. Start the server
 
 ```bash
-npm start
+npm run dev
 ```
 
 > If you inspect `package.json`, you will see that this is an alias for `nodemon server.js` in the "scripts" object
