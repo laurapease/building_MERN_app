@@ -108,7 +108,7 @@ npm run dev
 
 > If you inspect `package.json`, you will see that this is an alias for `nodemon server.js` in the "scripts" object
 
-4. Navigate to `localhost:3001/api/v1/games` to see the response from our server. You should see a message that says: "Incomplete games#index controller function". 
+4. Navigate to `localhost:4000/api/v1/games` to see the response from our server. You should see a message that says: "Incomplete games#index controller function". 
 
 5. In `controllers/games.js` all CRUD functionality has been stubbed out but is currently incomplete. Complete the `index` function with the following:
 
@@ -128,9 +128,9 @@ const index = (req, res) => {
 
 > The code we added will return a JSON response to the client that we can use to save or display the data as necessary.
 
-6. Navigate to `localhost:3001/api/v1/games` to see the response from our server now. You should see an array of 10 game objects from our database in JSON format. If you don't, debug before moving on.
+6. Navigate to `localhost:4000/api/v1/games` to see the response from our server now. You should see an array of 10 game objects from our database in JSON format. If you don't, debug before moving on.
 
-7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:3001/api/v1/games/<ValidGameIdHere>`. 
+7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:4000/api/v1/games/<ValidGameIdHere>`. 
 
 8. To implement the `create` method we first need to modify `server.js` to parse any JSON included with a POST or PUT request and save it within `req.body` for our access in the associated controller function. Uncomment line 9 of `server.js` to enable express's built-in body parsing capabilities. 
 
