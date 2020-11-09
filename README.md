@@ -103,12 +103,12 @@ node seed.js
 3. Start the server
 
 ```bash
-npm start
+npm run dev
 ```
 
 > If you inspect `package.json`, you will see that this is an alias for `nodemon server.js` in the "scripts" object
 
-4. Navigate to `localhost:3001/api/v1/games` to see the response from our server. You should see a message that says: "Incomplete games#index controller function". 
+4. Navigate to `localhost:4000/api/v1/games` to see the response from our server. You should see a message that says: "Incomplete games#index controller function". 
 
 5. In `controllers/games.js` all CRUD functionality has been stubbed out but is currently incomplete. Complete the `index` function with the following:
 
@@ -128,9 +128,9 @@ const index = (req, res) => {
 
 > The code we added will return a JSON response to the client that we can use to save or display the data as necessary.
 
-6. Navigate to `localhost:3001/api/v1/games` to see the response from our server now. You should see an array of 10 game objects from our database in JSON format. If you don't, debug before moving on.
+6. Navigate to `localhost:4000/api/v1/games` to see the response from our server now. You should see an array of 10 game objects from our database in JSON format. If you don't, debug before moving on.
 
-7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:3001/api/v1/games/<ValidGameIdHere>`. 
+7. Complete the `show` function so that it too sends back a single JSON game object when a request is made to `localhost:4000/api/v1/games/<ValidGameIdHere>`. 
 
 8. To implement the `create` method we first need to modify `server.js` to parse any JSON included with a POST or PUT request and save it within `req.body` for our access in the associated controller function. Uncomment line 9 of `server.js` to enable express's built-in body parsing capabilities. 
 
@@ -240,15 +240,15 @@ export default GameList;
 ## Two-Server Architecture (30 min / 1:15)
 
 Currently we are using this type of architecture. Our back-end is running on
-`localhost:3001` while our front-end is running on `localhost:3000`. One way to
+`localhost:4000` while our front-end is running on `localhost:3000`. One way to
 say this is that these applications have different "origins". One issue with
 this is that our browser is not going to like requests from our front-end
-(served by `localhost:3000`) to our back-end on `localhost:3001`. In the
+(served by `localhost:3000`) to our back-end on `localhost:4000`. In the
 application, navigate to the Game List view and check the console. You
 should see:
 
 ```
-XMLHttpRequest cannot load http://localhost:3001/api/v1/games. No 'Access-
+XMLHttpRequest cannot load http://localhost:4000/api/v1/games. No 'Access-
 Control-Allow-Origin' header is present on the requested resource. Origin
 'http://localhost:3000' is therefore not allowed access.
 ```
@@ -515,7 +515,7 @@ heroku run node db/seeds.js
 Now that our back-end is deployed to Heroku, we need to update our front-end with the correct URLs in our axios requests. Right now, axios is requesting data from our local server:
 
 ```js
-axios.get('http://localhost:3001/api/translations')
+axios.get('http://localhost:4000/api/translations')
 ```
 
 Update your axios request with your Heroku URL and `'/api/transtations'` For example:
