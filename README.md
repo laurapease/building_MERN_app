@@ -143,7 +143,7 @@ const create = (req, res) => {
 
         // Validations and error handling here
 
-        res.status(200).json({ game: savedGame })
+        res.status(201).json({ game: savedGame })
     })
 }
 ```
