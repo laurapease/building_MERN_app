@@ -91,7 +91,7 @@ We will also be using a Mongoose / Express back-end to allow for users to save t
 ### Back-End Setup
 
 1. First, clone down [the
-   back-end](https://git.generalassemb.ly/SF-SEI/gamelib-api),
+   back-end](https://git.generalassemb.ly/la-seir-9-8/gamelib-api),
    install dependencies, and open in VS Code.
 
 2. Run the seeds file to populate our MongoDB database with game data.
